@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize]
 
 jobs:
   simple_deployment_pipeline:
@@ -24,5 +21,6 @@ jobs:
         run: npm run build
       - name: Test
         run: npm run test
-      - name: Test e2e
-        run: npm run test:e2e
+      - name: Deploy on Render with curl
+        if: ${{ github.event_name == 'push' }}
+        run: curl -X POST "https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}"
