@@ -30,7 +30,7 @@ jobs:
         run: npm run test:e2e
       - name: Build failure
         uses: rjstone/discord-webhook-notify@v2
-        if: ${{ failure() }}
+        if: failure()
         with:
             webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
             severity: error
@@ -46,7 +46,7 @@ jobs:
         run: curl -X POST "https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}"
       - name: Deploy success
         uses: rjstone/discord-webhook-notify@v2
-        if: ${{ success() }}
+        if: success()
         with:
             webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
             severity: info
