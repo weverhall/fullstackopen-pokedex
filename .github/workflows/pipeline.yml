@@ -29,13 +29,15 @@ jobs:
       - name: Test e2e
         run: npm run test:e2e
       - name: Build failure
-        uses: rjstone/discord-webhook-notify@v2
-        if: failure()
-        with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-            severity: error
-            text: Build failed!
-            details: Check logs for more info ${{ github.run_url }}
+        if: ${{ failure() }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: '[{
+            "title": "Build failed",
+            "color": "red"
+            }]'
+        uses: "Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe"
+        
 
   deploy:
     needs: [verify_build]
@@ -45,13 +47,15 @@ jobs:
       - name: Deploy on Render with curl
         run: curl -X POST "https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}"
       - name: Deploy success
-        uses: rjstone/discord-webhook-notify@v2
-        if: success()
-        with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-            severity: info
-            text: Deploy successful!
-            details: New version released at https://fullstackopen-cicd.onrender.com/
+        if: ${{ success() }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: '[{
+            "title": "Deploy successful", 
+            "description": "New version released at https://fullstackopen-cicd.onrender.com/", 
+            "color": "green"
+            }]'
+        uses: "Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe"
      
   tag_release:
     needs: [deploy]
